@@ -1,0 +1,28 @@
+Start testing: Nov 12 16:50 +07
+----------------------------------------------------------
+1/1 Testing: snake_tests
+1/1 Test: snake_tests
+Command: "/Users/patiphan/Desktop/project/snake_c++/build/snake_tests"
+Directory: /Users/patiphan/Desktop/project/snake_c++/build
+"snake_tests" start time: Nov 12 16:50 +07
+Output:
+----------------------------------------------------------
+[PASS] moves forward
+[PASS] eating grows and scores
+[PASS] reverse turn ignored
+[PASS] self collision kills
+[PASS] chasing own tail is safe
+[PASS] wrap around walls
+[PASS] solid walls kill
+[PASS] same seed is deterministic
+[PASS] parse arrow keys
+All tests passed
+<end of output>
+Test time =   0.90 sec
+----------------------------------------------------------
+Test Passed.
+"snake_tests" end time: Nov 12 16:50 +07
+"snake_tests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 12 16:50 +07

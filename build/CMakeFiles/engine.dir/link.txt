@@ -1,0 +1,2 @@
+/usr/bin/ar qc libengine.a CMakeFiles/engine.dir/src/engine/core/Application.cpp.o CMakeFiles/engine.dir/src/engine/platform/Terminal.cpp.o CMakeFiles/engine.dir/src/engine/input/InputSystem.cpp.o CMakeFiles/engine.dir/src/engine/render/FrameBuffer.cpp.o CMakeFiles/engine.dir/src/engine/render/TerminalRenderer.cpp.o CMakeFiles/engine.dir/src/engine/scene/SceneManager.cpp.o
+/usr/bin/ranlib libengine.a

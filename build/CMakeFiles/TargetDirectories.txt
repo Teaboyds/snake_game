@@ -1,0 +1,8 @@
+/Users/patiphan/Desktop/project/snake_c++/build/CMakeFiles/engine.dir
+/Users/patiphan/Desktop/project/snake_c++/build/CMakeFiles/backend.dir
+/Users/patiphan/Desktop/project/snake_c++/build/CMakeFiles/game.dir
+/Users/patiphan/Desktop/project/snake_c++/build/CMakeFiles/snake.dir
+/Users/patiphan/Desktop/project/snake_c++/build/CMakeFiles/snake_tests.dir
+/Users/patiphan/Desktop/project/snake_c++/build/CMakeFiles/test.dir
+/Users/patiphan/Desktop/project/snake_c++/build/CMakeFiles/edit_cache.dir
+/Users/patiphan/Desktop/project/snake_c++/build/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,110 @@
+[
+{
+  "directory": "/Users/patiphan/Desktop/project/snake_c++/build",
+  "command": "/usr/bin/c++  -I/Users/patiphan/Desktop/project/snake_c++/src -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/engine.dir/src/engine/core/Application.cpp.o -c /Users/patiphan/Desktop/project/snake_c++/src/engine/core/Application.cpp",
+  "file": "/Users/patiphan/Desktop/project/snake_c++/src/engine/core/Application.cpp",
+  "output": "CMakeFiles/engine.dir/src/engine/core/Application.cpp.o"
+},
+{
+  "directory": "/Users/patiphan/Desktop/project/snake_c++/build",
+  "command": "/usr/bin/c++  -I/Users/patiphan/Desktop/project/snake_c++/src -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/engine.dir/src/engine/platform/Terminal.cpp.o -c /Users/patiphan/Desktop/project/snake_c++/src/engine/platform/Terminal.cpp",
+  "file": "/Users/patiphan/Desktop/project/snake_c++/src/engine/platform/Terminal.cpp",
+  "output": "CMakeFiles/engine.dir/src/engine/platform/Terminal.cpp.o"
+},
+{
+  "directory": "/Users/patiphan/Desktop/project/snake_c++/build",
+  "command": "/usr/bin/c++  -I/Users/patiphan/Desktop/project/snake_c++/src -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/engine.dir/src/engine/input/InputSystem.cpp.o -c /Users/patiphan/Desktop/project/snake_c++/src/engine/input/InputSystem.cpp",
+  "file": "/Users/patiphan/Desktop/project/snake_c++/src/engine/input/InputSystem.cpp",
+  "output": "CMakeFiles/engine.dir/src/engine/input/InputSystem.cpp.o"
+},
+{
+  "directory": "/Users/patiphan/Desktop/project/snake_c++/build",
+  "command": "/usr/bin/c++  -I/Users/patiphan/Desktop/project/snake_c++/src -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/engine.dir/src/engine/render/FrameBuffer.cpp.o -c /Users/patiphan/Desktop/project/snake_c++/src/engine/render/FrameBuffer.cpp",
+  "file": "/Users/patiphan/Desktop/project/snake_c++/src/engine/render/FrameBuffer.cpp",
+  "output": "CMakeFiles/engine.dir/src/engine/render/FrameBuffer.cpp.o"
+},
+{
+  "directory": "/Users/patiphan/Desktop/project/snake_c++/build",
+  "command": "/usr/bin/c++  -I/Users/patiphan/Desktop/project/snake_c++/src -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/engine.dir/src/engine/render/TerminalRenderer.cpp.o -c /Users/patiphan/Desktop/project/snake_c++/src/engine/render/TerminalRenderer.cpp",
+  "file": "/Users/patiphan/Desktop/project/snake_c++/src/engine/render/TerminalRenderer.cpp",
+  "output": "CMakeFiles/engine.dir/src/engine/render/TerminalRenderer.cpp.o"
+},
+{
+  "directory": "/Users/patiphan/Desktop/project/snake_c++/build",
+  "command": "/usr/bin/c++  -I/Users/patiphan/Desktop/project/snake_c++/src -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/engine.dir/src/engine/scene/SceneManager.cpp.o -c /Users/patiphan/Desktop/project/snake_c++/src/engine/scene/SceneManager.cpp",
+  "file": "/Users/patiphan/Desktop/project/snake_c++/src/engine/scene/SceneManager.cpp",
+  "output": "CMakeFiles/engine.dir/src/engine/scene/SceneManager.cpp.o"
+},
+{
+  "directory": "/Users/patiphan/Desktop/project/snake_c++/build",
+  "command": "/usr/bin/c++  -I/Users/patiphan/Desktop/project/snake_c++/src -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/backend.dir/src/backend/redis/RedisClient.cpp.o -c /Users/patiphan/Desktop/project/snake_c++/src/backend/redis/RedisClient.cpp",
+  "file": "/Users/patiphan/Desktop/project/snake_c++/src/backend/redis/RedisClient.cpp",
+  "output": "CMakeFiles/backend.dir/src/backend/redis/RedisClient.cpp.o"
+},
+{
+  "directory": "/Users/patiphan/Desktop/project/snake_c++/build",
+  "command": "/usr/bin/c++  -I/Users/patiphan/Desktop/project/snake_c++/src -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/game.dir/src/game/sim/Snake.cpp.o -c /Users/patiphan/Desktop/project/snake_c++/src/game/sim/Snake.cpp",
+  "file": "/Users/patiphan/Desktop/project/snake_c++/src/game/sim/Snake.cpp",
+  "output": "CMakeFiles/game.dir/src/game/sim/Snake.cpp.o"
+},
+{
+  "directory": "/Users/patiphan/Desktop/project/snake_c++/build",
+  "command": "/usr/bin/c++  -I/Users/patiphan/Desktop/project/snake_c++/src -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/game.dir/src/game/sim/World.cpp.o -c /Users/patiphan/Desktop/project/snake_c++/src/game/sim/World.cpp",
+  "file": "/Users/patiphan/Desktop/project/snake_c++/src/game/sim/World.cpp",
+  "output": "CMakeFiles/game.dir/src/game/sim/World.cpp.o"
+},
+{
+  "directory": "/Users/patiphan/Desktop/project/snake_c++/build",
+  "command": "/usr/bin/c++  -I/Users/patiphan/Desktop/project/snake_c++/src -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/game.dir/src/game/services/InMemoryLeaderboard.cpp.o -c /Users/patiphan/Desktop/project/snake_c++/src/game/services/InMemoryLeaderboard.cpp",
+  "file": "/Users/patiphan/Desktop/project/snake_c++/src/game/services/InMemoryLeaderboard.cpp",
+  "output": "CMakeFiles/game.dir/src/game/services/InMemoryLeaderboard.cpp.o"
+},
+{
+  "directory": "/Users/patiphan/Desktop/project/snake_c++/build",
+  "command": "/usr/bin/c++  -I/Users/patiphan/Desktop/project/snake_c++/src -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/game.dir/src/game/services/RedisLeaderboard.cpp.o -c /Users/patiphan/Desktop/project/snake_c++/src/game/services/RedisLeaderboard.cpp",
+  "file": "/Users/patiphan/Desktop/project/snake_c++/src/game/services/RedisLeaderboard.cpp",
+  "output": "CMakeFiles/game.dir/src/game/services/RedisLeaderboard.cpp.o"
+},
+{
+  "directory": "/Users/patiphan/Desktop/project/snake_c++/build",
+  "command": "/usr/bin/c++  -I/Users/patiphan/Desktop/project/snake_c++/src -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/game.dir/src/game/scenes/LeaderboardView.cpp.o -c /Users/patiphan/Desktop/project/snake_c++/src/game/scenes/LeaderboardView.cpp",
+  "file": "/Users/patiphan/Desktop/project/snake_c++/src/game/scenes/LeaderboardView.cpp",
+  "output": "CMakeFiles/game.dir/src/game/scenes/LeaderboardView.cpp.o"
+},
+{
+  "directory": "/Users/patiphan/Desktop/project/snake_c++/build",
+  "command": "/usr/bin/c++  -I/Users/patiphan/Desktop/project/snake_c++/src -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/game.dir/src/game/scenes/MenuScene.cpp.o -c /Users/patiphan/Desktop/project/snake_c++/src/game/scenes/MenuScene.cpp",
+  "file": "/Users/patiphan/Desktop/project/snake_c++/src/game/scenes/MenuScene.cpp",
+  "output": "CMakeFiles/game.dir/src/game/scenes/MenuScene.cpp.o"
+},
+{
+  "directory": "/Users/patiphan/Desktop/project/snake_c++/build",
+  "command": "/usr/bin/c++  -I/Users/patiphan/Desktop/project/snake_c++/src -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/game.dir/src/game/scenes/NameEntryScene.cpp.o -c /Users/patiphan/Desktop/project/snake_c++/src/game/scenes/NameEntryScene.cpp",
+  "file": "/Users/patiphan/Desktop/project/snake_c++/src/game/scenes/NameEntryScene.cpp",
+  "output": "CMakeFiles/game.dir/src/game/scenes/NameEntryScene.cpp.o"
+},
+{
+  "directory": "/Users/patiphan/Desktop/project/snake_c++/build",
+  "command": "/usr/bin/c++  -I/Users/patiphan/Desktop/project/snake_c++/src -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/game.dir/src/game/scenes/PlayScene.cpp.o -c /Users/patiphan/Desktop/project/snake_c++/src/game/scenes/PlayScene.cpp",
+  "file": "/Users/patiphan/Desktop/project/snake_c++/src/game/scenes/PlayScene.cpp",
+  "output": "CMakeFiles/game.dir/src/game/scenes/PlayScene.cpp.o"
+},
+{
+  "directory": "/Users/patiphan/Desktop/project/snake_c++/build",
+  "command": "/usr/bin/c++  -I/Users/patiphan/Desktop/project/snake_c++/src -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/game.dir/src/game/scenes/GameOverScene.cpp.o -c /Users/patiphan/Desktop/project/snake_c++/src/game/scenes/GameOverScene.cpp",
+  "file": "/Users/patiphan/Desktop/project/snake_c++/src/game/scenes/GameOverScene.cpp",
+  "output": "CMakeFiles/game.dir/src/game/scenes/GameOverScene.cpp.o"
+},
+{
+  "directory": "/Users/patiphan/Desktop/project/snake_c++/build",
+  "command": "/usr/bin/c++  -I/Users/patiphan/Desktop/project/snake_c++/src -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/snake.dir/src/main.cpp.o -c /Users/patiphan/Desktop/project/snake_c++/src/main.cpp",
+  "file": "/Users/patiphan/Desktop/project/snake_c++/src/main.cpp",
+  "output": "CMakeFiles/snake.dir/src/main.cpp.o"
+},
+{
+  "directory": "/Users/patiphan/Desktop/project/snake_c++/build",
+  "command": "/usr/bin/c++  -I/Users/patiphan/Desktop/project/snake_c++/src -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/snake_tests.dir/tests/TestMain.cpp.o -c /Users/patiphan/Desktop/project/snake_c++/tests/TestMain.cpp",
+  "file": "/Users/patiphan/Desktop/project/snake_c++/tests/TestMain.cpp",
+  "output": "CMakeFiles/snake_tests.dir/tests/TestMain.cpp.o"
+}
+]
