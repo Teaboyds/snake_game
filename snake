@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# ทางลัด build + รัน: ./snake run start  |  ./snake run test
+set -euo pipefail
+
+# ตาม symlink กลับมาที่โฟลเดอร์โปรเจกต์ (เผื่อเรียกผ่าน ~/.local/bin/snake)
+SELF="${BASH_SOURCE[0]}"
+while [ -L "$SELF" ]; do
+    LINK="$(readlink "$SELF")"
+    case "$LINK" in
+        /*) SELF="$LINK" ;;
+        *)  SELF="$(dirname "$SELF")/$LINK" ;;
+    esac
+done
+ROOT="$(cd "$(dirname "$SELF")" && pwd)"
+BUILD="$ROOT/build"
+
+usage() {
+    echo "usage: snake run start   # build แล้วเล่นเกม"
+    echo "       snake run test    # build แล้วรัน unit tests"
+    exit 1
+}
+
+build() {
+    [ -f "$BUILD/CMakeCache.txt" ] || cmake -S "$ROOT" -B "$BUILD"
+    cmake --build "$BUILD" -j
+}
+
+[ "${1:-}" = "run" ] || usage
+
+case "${2:-}" in
+    start) build && exec "$BUILD/snake" ;;
+    test)  build && exec "$BUILD/snake_tests" ;;
+    *)     usage ;;
+esac

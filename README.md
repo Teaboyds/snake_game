@@ -15,6 +15,19 @@ cmake --build build -j
 ./build/snake_tests    # รัน unit tests
 ```
 
+หรือใช้ทางลัด (configure + build + รันในคำสั่งเดียว):
+
+```bash
+./snake run start      # เล่นเกม
+./snake run test       # รัน unit tests
+```
+
+อยากพิมพ์แค่ `snake run start` จากที่ไหนก็ได้ ให้ลิงก์สคริปต์เข้า PATH ครั้งเดียว:
+
+```bash
+ln -s "$PWD/snake" ~/.local/bin/snake
+```
+
 ปุ่ม: ลูกศร / WASD เดิน · P หรือ Esc หยุด · Enter เริ่ม · Q ออก
 
 คะแนนเก็บใน Redis (`127.0.0.1:6380` ค่าเริ่มต้น, เปลี่ยนด้วย `SNAKE_REDIS_HOST` / `SNAKE_REDIS_PORT`) — ต่อไม่ได้ก็เล่นแบบ offline ได้

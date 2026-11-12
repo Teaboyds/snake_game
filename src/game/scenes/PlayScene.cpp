@@ -72,7 +72,6 @@ void PlayScene::onGameEvent(const GameEvent& event) {
             break;
         case GameEvent::Type::SnakeDied:
         case GameEvent::Type::BoardCleared:
-            // ส่งคะแนนทันทีที่เกมจบ (ไม่รอหน้า Game Over) กดออกระหว่างนั้นคะแนนก็ไม่หาย
             newBest_ = world_.score() > personalBest_;
             session_.leaderboard.submitScore(session_.playerName, world_.score());
             break;
