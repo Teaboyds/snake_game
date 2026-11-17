@@ -18,14 +18,16 @@ cmake --build build -j
 หรือใช้ทางลัด (configure + build + รันในคำสั่งเดียว):
 
 ```bash
+./snake                # เล่นเกม (เหมือน ./snake run start)
 ./snake run start      # เล่นเกม
 ./snake run test       # รัน unit tests
 ```
 
-อยากพิมพ์แค่ `snake run start` จากที่ไหนก็ได้ ให้ลิงก์สคริปต์เข้า PATH ครั้งเดียว:
+อยากพิมพ์แค่ `snake` จากที่ไหนก็ได้ ให้ลิงก์สคริปต์เข้า PATH ครั้งเดียว:
 
 ```bash
 ln -s "$PWD/snake" ~/.local/bin/snake
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc   # ถ้า ~/.local/bin ยังไม่อยู่ใน PATH
 ```
 
 ปุ่ม: ลูกศร / WASD เดิน · P หรือ Esc หยุด · Enter เริ่ม · Q ออก

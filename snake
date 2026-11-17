@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ทางลัด build + รัน: ./snake run start  |  ./snake run test
+# ทางลัด build + รัน: snake  |  snake run start  |  snake run test
 set -euo pipefail
 
 # ตาม symlink กลับมาที่โฟลเดอร์โปรเจกต์ (เผื่อเรียกผ่าน ~/.local/bin/snake)
@@ -15,7 +15,8 @@ ROOT="$(cd "$(dirname "$SELF")" && pwd)"
 BUILD="$ROOT/build"
 
 usage() {
-    echo "usage: snake run start   # build แล้วเล่นเกม"
+    echo "usage: snake             # build แล้วเล่นเกม"
+    echo "       snake run start   # build แล้วเล่นเกม"
     echo "       snake run test    # build แล้วรัน unit tests"
     exit 1
 }
@@ -25,6 +26,8 @@ build() {
     cmake --build "$BUILD" -j
 }
 
+# พิมพ์แค่ `snake` = เริ่มเกม
+[ $# -eq 0 ] && set -- run start
 [ "${1:-}" = "run" ] || usage
 
 case "${2:-}" in
