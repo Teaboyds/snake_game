@@ -25,11 +25,11 @@ cmake --build build -j
 ./snake run test       # รัน unit tests
 ```
 
-อยากพิมพ์แค่ `snake` จากที่ไหนก็ได้ ให้ลิงก์สคริปต์เข้า PATH ครั้งเดียว:
+อยากพิมพ์แค่ `snake` จากที่ไหนก็ได้ ให้รันครั้งเดียว (ลิงก์เข้าโฟลเดอร์ที่อยู่ใน PATH อยู่แล้ว ไม่แก้ `~/.zshrc`):
 
 ```bash
-ln -s "$PWD/snake" ~/.local/bin/snake
-echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc   # ถ้า ~/.local/bin ยังไม่อยู่ใน PATH
+./install.sh             # ติดตั้ง
+./install.sh uninstall   # ถอนการติดตั้ง
 ```
 
 ปุ่ม: ลูกศร / WASD เดิน · P หรือ Esc หยุด · Enter เริ่ม · Q ออก · กิน `$` แล้วพิมพ์คำให้ทันเพื่อรับ Life
