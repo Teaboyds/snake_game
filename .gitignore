@@ -1,0 +1,6 @@
+# CMake build outputs (สร้างใหม่ได้ด้วย ./snake หรือ cmake --build build)
+build/
+build-*/
+
+# clangd index
+.cache/
