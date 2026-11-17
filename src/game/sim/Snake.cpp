@@ -45,4 +45,11 @@ bool Snake::crossesEdge() const {
     return false;
 }
 
+bool Snake::headOverlapsBody() const {
+    for (std::size_t i = 1; i < body_.size(); ++i) {
+        if (body_[i] == body_.front()) return true;
+    }
+    return false;
+}
+
 }  // namespace snake

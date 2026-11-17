@@ -16,6 +16,11 @@ class PlayScene : public engine::scene::Scene {
 public:
     PlayScene(engine::scene::SceneManager& scenes, Session& session);
 
+    // ระหว่าง Typing Challenge ปุ่มตัวอักษรกลายเป็นการพิมพ์ (ลูกศรยังเลี้ยวได้, Esc = pause)
+    bool wantsTextInput() const override {
+        return (world_.challenge().has_value() || typingGrace_ > 0.0) && !paused_;
+    }
+
     void handleInput(const engine::input::InputFrame& input) override;
     void update(double dt) override;
     void render(engine::render::FrameBuffer& frame) override;
@@ -31,6 +36,8 @@ private:
     double moveInterval_;
     double moveTimer_ = 0.0;
     double endTimer_ = 0.0;  // หน่วงให้เห็นตอนตายก่อนเข้าหน้า Game Over
+    double elapsed_ = 0.0;   // เวลาเล่นสะสม ใช้ทำเอฟเฟกต์กะพริบ
+    double typingGrace_ = 0.0;  // เวลาที่ยังอยู่ในโหมดพิมพ์หลัง challenge จบ
     bool paused_ = false;
     bool newBest_ = false;
     bool leaving_ = false;

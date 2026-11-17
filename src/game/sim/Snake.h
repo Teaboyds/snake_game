@@ -25,6 +25,9 @@ public:
     // true ถ้าตัวงูกำลังพาดข้ามขอบจอ (ส่วนหนึ่งทะลุไปอีกฝั่งแล้ว)
     bool crossesEdge() const;
 
+    // true ถ้าหัวทับส่วนอื่นของตัว (เกิดได้เฉพาะตอน Invulnerability)
+    bool headOverlapsBody() const;
+
     engine::Vec2i head() const { return body_.front(); }
     Direction direction() const { return direction_; }
     const std::deque<engine::Vec2i>& body() const { return body_; }

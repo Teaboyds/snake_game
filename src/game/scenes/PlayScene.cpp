@@ -15,6 +15,9 @@ using engine::render::Color;
 
 namespace {
 constexpr double kEndDelay = 1.0;
+// หลัง challenge จบ ยังอยู่ในโหมดพิมพ์ต่ออีกนิด ตัวอักษรที่ยังพิมพ์ค้างอยู่จะได้ไม่กลายเป็นปุ่มเลี้ยว (เช่น d ใน adder)
+constexpr double kTypingGrace = 0.5;
+constexpr double kChallengeTimeLow = 2.0;  // เวลาเหลือน้อยกว่านี้ ตัวเลขเป็นสีแดง
 }
 
 PlayScene::PlayScene(engine::scene::SceneManager& scenes, Session& session)
@@ -39,6 +42,9 @@ void PlayScene::handleInput(const engine::input::InputFrame& input) {
             default: break;
         }
     }
+    if (!paused_) {
+        for (const GameEvent& event : world_.type(input.text)) onGameEvent(event);
+    }
 }
 
 void PlayScene::update(double dt) {
@@ -54,12 +60,20 @@ void PlayScene::update(double dt) {
         return;
     }
 
+    elapsed_ += dt;
     for (const GameEvent& event : world_.advance(dt)) onGameEvent(event);
     if (world_.status() != WorldStatus::Running) return;
 
-    moveTimer_ += dt;
-    while (moveTimer_ >= moveInterval_ && world_.status() == WorldStatus::Running) {
-        moveTimer_ -= moveInterval_;
+    if (typingGrace_ > 0.0) typingGrace_ -= dt;
+
+    auto interval = [&] {
+        const double factor = session_.config.challengeSpeedFactor;
+        return world_.challenge() && factor > 0.0 ? moveInterval_ / factor : moveInterval_;
+    };
+    // challenge จบ = interval สั้นลงทันที ตัดเวลาที่สะสมไว้ ไม่งั้นงูกระโดด 2 ช่องในเฟรมเดียว
+    moveTimer_ = std::min(moveTimer_ + dt, interval());
+    while (moveTimer_ >= interval() && world_.status() == WorldStatus::Running) {
+        moveTimer_ -= interval();
         for (const GameEvent& event : world_.step()) onGameEvent(event);
     }
 }
@@ -75,10 +89,16 @@ void PlayScene::onGameEvent(const GameEvent& event) {
             newBest_ = world_.score() > personalBest_;
             session_.leaderboard.submitScore(session_.playerName, world_.score());
             break;
+        case GameEvent::Type::TypingChallengePassed:
+        case GameEvent::Type::TypingChallengeFailed:
+            typingGrace_ = kTypingGrace;
+            break;
         case GameEvent::Type::WallsWarning:
         case GameEvent::Type::WallsSolid:
         case GameEvent::Type::WallsOpen:
-            break;  // render อ่าน wallState() เอง — ตรงนี้ไว้ต่อเสียง / effect ในอนาคต
+        case GameEvent::Type::TypingChallengeStarted:
+        case GameEvent::Type::LifeLost:
+            break;  // render อ่าน state จาก World เอง — ตรงนี้ไว้ต่อเสียง / effect ในอนาคต
     }
 }
 
@@ -101,6 +121,14 @@ void PlayScene::render(engine::render::FrameBuffer& frame) {
 
     // HUD
     frame.text(left, top - 2, "PLAYER " + session_.playerName, Color::Green, true);
+    const int maxLives = session_.config.maxLives;
+    int livesX = left + boxWidth - (6 + maxLives * 3);
+    frame.text(livesX, top - 2, "LIFE ", Color::White, true);
+    livesX += 5;
+    for (int i = 0; i < maxLives; ++i, livesX += 3) {
+        if (i < world_.lives()) frame.text(livesX + 1, top - 2, "<3", Color::Red, true);
+        else frame.text(livesX + 1, top - 2, "--", Color::Gray);
+    }
     frame.text(left, top - 1, "SCORE " + std::to_string(world_.score()), Color::White, true);
     const std::string best = "BEST " + std::to_string(std::max(personalBest_, world_.score()));
     frame.text(left + boxWidth - static_cast<int>(best.size()), top - 1, best, Color::Cyan);
@@ -137,14 +165,22 @@ void PlayScene::render(engine::render::FrameBuffer& frame) {
         for (int x = 0; x < w; ++x) frame.put(cellX(x), cellY(y), '.', Color::Gray);
     }
 
+    const bool blinkOn = static_cast<int>(elapsed_ * 8.0) % 2 == 0;
+
     // ผลไม้
     if (const auto fruit = world_.fruit()) {
         frame.put(cellX(fruit->x), cellY(fruit->y), '*', Color::Red, true);
     }
+    // Challenge Fruit กะพริบช่วงท้ายก่อนหายไป
+    if (const auto fruit = world_.challengeFruit();
+        fruit && (world_.challengeFruitTimeLeft() > session_.config.challengeFruitBlinkSeconds || blinkOn)) {
+        frame.put(cellX(fruit->x), cellY(fruit->y), '$', Color::Yellow, true);
+    }
 
     // งู (วาดจากหางไปหัว ให้หัวทับตัวเสมอ)
     const WorldStatus status = world_.status();
-    const Color bodyColor = status == WorldStatus::Won ? Color::Yellow : Color::Green;
+    Color bodyColor = status == WorldStatus::Won ? Color::Yellow : Color::Green;
+    if (world_.invulnerable() && !blinkOn) bodyColor = Color::Gray;  // กะพริบตอน Invulnerability
     const auto& body = world_.snake().body();
     for (auto it = body.rbegin(); it != body.rend(); ++it) {
         frame.put(cellX(it->x), cellY(it->y), 'o', bodyColor);
@@ -166,7 +202,30 @@ void PlayScene::render(engine::render::FrameBuffer& frame) {
         frame.textCentered(midY, "  PERFECT!  ", Color::Yellow, true);
     }
 
-    frame.textCentered(top + boxHeight, "Arrows: move   P/Esc: pause   Q: quit", Color::Gray);
+    // ระหว่าง Typing Challenge บรรทัดคำแนะนำปุ่มกลายเป็นโจทย์ (ตอน pause ซ่อนคำ กันแอบดู)
+    if (const auto& challenge = world_.challenge(); challenge && status == WorldStatus::Running) {
+        char timeLeft[32];
+        std::snprintf(timeLeft, sizeof(timeLeft), "  %.1fs", std::max(0.0, challenge->timeLeft));
+        const std::string label = "TYPE: ";
+        const int lineWidth = static_cast<int>(label.size() + challenge->word.size() + std::string(timeLeft).size());
+        int x = (frame.width() - lineWidth) / 2;
+        frame.text(x, top + boxHeight, label, Color::White, true);
+        x += static_cast<int>(label.size());
+        for (std::size_t i = 0; i < challenge->word.size(); ++i, ++x) {
+            if (paused_) {
+                frame.put(x, top + boxHeight, '?', Color::Gray);
+            } else if (i >= challenge->typed.size()) {
+                frame.put(x, top + boxHeight, challenge->word[i], Color::White, true);
+            } else if (challenge->typed[i] == challenge->word[i]) {
+                frame.put(x, top + boxHeight, challenge->word[i], Color::Green, true);
+            } else {
+                frame.put(x, top + boxHeight, challenge->typed[i], Color::Red, true);
+            }
+        }
+        frame.text(x, top + boxHeight, timeLeft, challenge->timeLeft < kChallengeTimeLow ? Color::Red : Color::Yellow);
+    } else {
+        frame.textCentered(top + boxHeight, "Arrows: move   P/Esc: pause   Q: quit", Color::Gray);
+    }
 }
 
 }  // namespace snake

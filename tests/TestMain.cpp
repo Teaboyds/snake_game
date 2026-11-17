@@ -1,4 +1,5 @@
 // Unit tests ของ simulation — รันได้โดยไม่ต้องเปิด terminal เพราะ World ไม่มี I/O
+#include <cctype>
 #include <cstdlib>
 #include <iostream>
 #include <vector>
@@ -198,6 +199,270 @@ void testSnakeStraddlingEdgeDiesWhenWallsTurnSolid() {
     CHECK(world.status() == WorldStatus::Dead);
 }
 
+// กระดาน 6x6 หัวอยู่ (3,3) หันขวา ผลไม้ปกติอยู่ไกล ไม่ขวางทาง
+World makeChallengeWorld(GameConfig config = GameConfig{}) {
+    config.boardWidth = 6;
+    config.boardHeight = 6;
+    World world(config, 1);
+    world.setFruitForTesting({0, 0});
+    return world;
+}
+
+void testEatingChallengeFruitStartsTypingChallenge() {
+    World world = makeChallengeWorld();
+    world.setChallengeFruitForTesting({4, 3});
+    const auto events = world.step();
+    CHECK(hasEvent(events, GameEvent::Type::TypingChallengeStarted));
+    CHECK(world.challenge().has_value());
+    CHECK(world.challenge()->word.size() >= 4 && world.challenge()->word.size() <= 6);
+    CHECK(!world.challengeFruit().has_value());
+    CHECK(world.score() == 0);
+    CHECK(world.snake().length() == 3);
+}
+
+void testTypingWordEarnsLife() {
+    World world = makeChallengeWorld();
+    world.setChallengeFruitForTesting({4, 3});
+    world.step();
+    CHECK(world.lives() == 0);
+
+    const auto events = world.type(world.challenge()->word);
+    CHECK(hasEvent(events, GameEvent::Type::TypingChallengePassed));
+    CHECK(!world.challenge().has_value());
+    CHECK(world.lives() == 1);
+}
+
+// ได้ Life แบบที่ผู้เล่นได้จริง: กิน Challenge Fruit ข้างหน้าแล้วพิมพ์คำให้ถูก (งูเดิน 1 ช่อง)
+void earnLife(World& world) {
+    const Vec2i ahead = world.snake().head() + snake::toVector(world.snake().direction());
+    world.setChallengeFruitForTesting({(ahead.x + world.width()) % world.width(),
+                                       (ahead.y + world.height()) % world.height()});
+    world.step();
+    world.type(world.challenge()->word);
+}
+
+void testSelfCollisionWithLifeSpendsIt() {
+    GameConfig config;
+    config.initialLength = 5;
+    World world(config, 1);
+    world.setFruitForTesting({0, 0});
+    earnLife(world);
+    CHECK(world.lives() == 1);
+
+    world.submit({Direction::Up});
+    world.step();
+    world.submit({Direction::Left});
+    world.step();
+    world.submit({Direction::Down});
+    const auto events = world.step();
+    CHECK(hasEvent(events, GameEvent::Type::LifeLost));
+    CHECK(!hasEvent(events, GameEvent::Type::SnakeDied));
+    CHECK(world.status() == WorldStatus::Running);
+    CHECK(world.lives() == 0);
+    CHECK(world.invulnerable());
+}
+
+void testSolidWallWithLifeWrapsAndInvulnerabilityPassesAgain() {
+    World world = makeChallengeWorld([] {
+        GameConfig config;
+        config.wallEventScoreInterval = 10;
+        return config;
+    }());
+    earnLife(world);  // (4,3)
+    world.setFruitForTesting({5, 3});
+    world.step();  // (5,3) 10 แต้ม -> warning
+    world.setFruitForTesting({0, 0});
+    world.advance(2.0);
+    CHECK(world.wallState() == snake::WallState::Solid);
+
+    const auto events = world.step();  // ชนกำแพงแดง
+    CHECK(hasEvent(events, GameEvent::Type::LifeLost));
+    CHECK(world.status() == WorldStatus::Running);
+    CHECK(world.snake().head() == (Vec2i{0, 3}));
+    CHECK(world.lives() == 0);
+
+    for (int i = 0; i < 5; ++i) world.step();  // (5,3)
+    world.step();  // ชนอีกรอบระหว่าง Invulnerability
+    CHECK(world.status() == WorldStatus::Running);
+    CHECK(world.snake().head() == (Vec2i{0, 3}));
+}
+
+void testStraddlingSnakeWithLifeSurvivesWallsTurningSolid() {
+    World world = makeChallengeWorld([] {
+        GameConfig config;
+        config.wallEventScoreInterval = 10;
+        return config;
+    }());
+    earnLife(world);  // (4,3)
+    world.setFruitForTesting({5, 3});
+    world.step();  // (5,3) 10 แต้ม -> warning
+    world.setFruitForTesting({0, 0});
+    world.step();  // (0,3) — ตัวยังค้างอยู่อีกฝั่ง
+    CHECK(world.snake().crossesEdge());
+
+    const auto events = world.advance(2.0);
+    CHECK(hasEvent(events, GameEvent::Type::LifeLost));
+    CHECK(world.status() == WorldStatus::Running);
+    CHECK(world.lives() == 0);
+}
+
+// งูยาว 5 เพิ่งชนตัวเองแล้วเสีย Life: หัวอยู่ (12,8) ทับหางพอดี หันลง
+World makeSnakeThatJustSpentLife() {
+    GameConfig config;
+    config.initialLength = 5;
+    World world(config, 1);
+    world.setFruitForTesting({0, 0});
+    earnLife(world);
+    world.submit({Direction::Up});
+    world.step();
+    world.submit({Direction::Left});
+    world.step();
+    world.submit({Direction::Down});
+    world.step();
+    return world;
+}
+
+void testInvulnerabilityWearsOff() {
+    World world = makeSnakeThatJustSpentLife();
+    world.step();  // หัวลงไป (12,9) พ้นตัวเองแล้ว
+    world.advance(1.9);
+    CHECK(world.invulnerable());
+    world.advance(0.1);
+    CHECK(!world.invulnerable());
+}
+
+void testInvulnerabilityLastsUntilHeadLeavesBody() {
+    World world = makeSnakeThatJustSpentLife();
+    world.advance(2.0);  // หมดเวลาแล้ว แต่หัวยังทับหางอยู่
+    CHECK(world.invulnerable());
+    world.step();  // หัวลงไป (12,9) พ้นตัวเองแล้ว
+    world.advance(1.0 / 60.0);
+    CHECK(!world.invulnerable());
+}
+
+void testTypingChallengeFailsWhenTimeRunsOut() {
+    World world = makeChallengeWorld();
+    world.setChallengeFruitForTesting({4, 3});
+    world.step();
+    const double timeLimit = world.challenge()->word.size() * 1.0;  // 1 วินาทีต่อตัวอักษร
+
+    world.advance(timeLimit - 0.1);
+    CHECK(world.challenge().has_value());
+    const auto events = world.advance(0.1);
+    CHECK(hasEvent(events, GameEvent::Type::TypingChallengeFailed));
+    CHECK(!world.challenge().has_value());
+    CHECK(world.lives() == 0);
+}
+
+void testPassingWithFullLivesGivesBonusScore() {
+    World world = makeChallengeWorld();
+    for (int i = 0; i < 3; ++i) earnLife(world);
+    CHECK(world.lives() == 3);
+
+    earnLife(world);
+    CHECK(world.lives() == 3);
+    CHECK(world.score() == 20);
+}
+
+void testChallengeFruitAppearsEvery20SecondsAndLasts5() {
+    World world = makeChallengeWorld();
+    world.advance(19.9);
+    CHECK(!world.challengeFruit().has_value());
+    world.advance(0.1);
+    CHECK(world.challengeFruit().has_value());
+    CHECK(world.challengeFruit() != world.fruit());
+    CHECK(!world.snake().wouldCollide(*world.challengeFruit(), true));
+
+    world.advance(4.9);
+    CHECK(world.challengeFruit().has_value());
+    world.advance(0.1);
+    CHECK(!world.challengeFruit().has_value());
+
+    // นับ 20 วินาทีใหม่ตั้งแต่ตอนที่หายไป
+    world.advance(19.9);
+    CHECK(!world.challengeFruit().has_value());
+    world.advance(0.1);
+    CHECK(world.challengeFruit().has_value());
+}
+
+void testChallengeFruitTimerPausesDuringTypingChallenge() {
+    World world = makeChallengeWorld([] {
+        GameConfig config;
+        config.challengeSecondsPerLetter = 10.0;  // challenge ยาวอย่างน้อย 40 วินาที
+        return config;
+    }());
+    world.setChallengeFruitForTesting({4, 3});
+    world.step();
+    world.advance(30.0);
+    CHECK(world.challenge().has_value());
+    CHECK(!world.challengeFruit().has_value());
+
+    world.type(world.challenge()->word);
+    world.advance(19.9);
+    CHECK(!world.challengeFruit().has_value());
+    world.advance(0.1);
+    CHECK(world.challengeFruit().has_value());
+}
+
+void testTypoCanBeFixedWithBackspaceAndCaseIsIgnored() {
+    World world = makeChallengeWorld();
+    world.setChallengeFruitForTesting({4, 3});
+    world.step();
+    std::string upper = world.challenge()->word;
+    for (char& c : upper) c = static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
+
+    world.type("z");  // ไม่มีคำไหนขึ้นต้นด้วย z
+    CHECK(world.challenge()->typed == "z");
+    world.type("\b");
+    CHECK(world.challenge()->typed.empty());
+
+    const auto events = world.type(upper);
+    CHECK(hasEvent(events, GameEvent::Type::TypingChallengePassed));
+    CHECK(world.lives() == 1);
+}
+
+void testChallengeFruitOnLastFreeCellDoesNotEndTheGame() {
+    GameConfig config;
+    config.boardWidth = 5;
+    config.boardHeight = 1;
+    World world(config, 1);  // งู (2,0) (1,0) (0,0) หันขวา เหลือช่องว่าง (3,0) (4,0)
+    world.setFruitForTesting({3, 0});
+    world.setChallengeFruitForTesting({4, 0});
+
+    const auto events = world.step();  // กินผลไม้ ช่องว่างที่เหลือมีแต่ Challenge Fruit
+    CHECK(!hasEvent(events, GameEvent::Type::BoardCleared));
+    CHECK(world.status() == WorldStatus::Running);
+    CHECK(world.fruit() == (Vec2i{4, 0}));
+    CHECK(!world.challengeFruit().has_value());
+}
+
+void testNoEventsAfterSnakeDiesInSameFrame() {
+    GameConfig config;
+    config.wallEventScoreInterval = 10;
+    config.challengeSecondsPerLetter = 0.1;
+    World world = makeChallengeWorld(config);
+    world.setChallengeFruitForTesting({4, 3});
+    world.step();  // (4,3) เริ่ม challenge
+    world.setFruitForTesting({5, 3});
+    world.step();  // (5,3) 10 แต้ม -> warning
+    world.setFruitForTesting({0, 0});
+    world.step();  // (0,3) ตัวพาดขอบ
+
+    const auto events = world.advance(2.0);  // กำแพงหนีบตาย + challenge หมดเวลาในเฟรมเดียวกัน
+    CHECK(!events.empty() && events.back().type == GameEvent::Type::SnakeDied);
+}
+
+void testNoChallengeWithoutWords() {
+    GameConfig config;
+    config.challengeWords.clear();
+    World world = makeChallengeWorld(config);
+    world.setChallengeFruitForTesting({4, 3});
+    const auto events = world.step();
+    CHECK(!hasEvent(events, GameEvent::Type::TypingChallengeStarted));
+    CHECK(!world.challenge().has_value());
+    CHECK(world.status() == WorldStatus::Running);
+}
+
 void testSameSeedIsDeterministic() {
     World a(GameConfig{}, 42);
     World b(GameConfig{}, 42);
@@ -323,6 +588,23 @@ int main() {
         {"warning walls still wrap", testWarningWallsStillWrap},
         {"solid walls kill on hit", testSolidWallsKillOnHit},
         {"straddling edge dies when walls turn solid", testSnakeStraddlingEdgeDiesWhenWallsTurnSolid},
+        {"eating challenge fruit starts typing challenge", testEatingChallengeFruitStartsTypingChallenge},
+        {"typing word earns life", testTypingWordEarnsLife},
+        {"self collision with life spends it", testSelfCollisionWithLifeSpendsIt},
+        {"solid wall with life wraps, invulnerability passes again",
+         testSolidWallWithLifeWrapsAndInvulnerabilityPassesAgain},
+        {"straddling snake with life survives walls turning solid",
+         testStraddlingSnakeWithLifeSurvivesWallsTurningSolid},
+        {"invulnerability wears off", testInvulnerabilityWearsOff},
+        {"invulnerability lasts until head leaves body", testInvulnerabilityLastsUntilHeadLeavesBody},
+        {"typing challenge fails when time runs out", testTypingChallengeFailsWhenTimeRunsOut},
+        {"passing with full lives gives bonus score", testPassingWithFullLivesGivesBonusScore},
+        {"challenge fruit appears every 20s and lasts 5s", testChallengeFruitAppearsEvery20SecondsAndLasts5},
+        {"challenge fruit timer pauses during typing challenge", testChallengeFruitTimerPausesDuringTypingChallenge},
+        {"typo can be fixed with backspace, case is ignored", testTypoCanBeFixedWithBackspaceAndCaseIsIgnored},
+        {"challenge fruit on last free cell does not end the game", testChallengeFruitOnLastFreeCellDoesNotEndTheGame},
+        {"no events after snake dies in same frame", testNoEventsAfterSnakeDiesInSameFrame},
+        {"no challenge without words", testNoChallengeWithoutWords},
         {"same seed is deterministic", testSameSeedIsDeterministic},
         {"parse arrow keys", testParseArrowKeys},
         {"text mode types letters instead of actions", testTextModeTypesLettersInsteadOfActions},
