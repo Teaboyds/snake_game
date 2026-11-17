@@ -24,7 +24,7 @@ struct GameConfig {
     int wallUnlockScore = 50;
 
     // Typing Challenge: กิน Challenge Fruit แล้วต้องพิมพ์คำให้ทันเวลา ผ่าน = ได้ Life
-    // ค่าเวลาทั้งหมดจูนจาก prototype (branch prototype/typing-challenge)
+    // ค่าเวลาทั้งหมดจูนจากการลองเล่น prototype ก่อนเขียนจริง
     std::vector<std::string> challengeWords = {
         "fang", "coil",  "tail",  "hiss",   "venom", "scale", "viper", "cobra", "apple", "fruit",
         "shed", "mamba", "python", "adder", "slink", "prey",  "bite",  "curl",  "glide",

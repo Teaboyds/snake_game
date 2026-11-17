@@ -5,6 +5,8 @@
 📘 **เอกสาร**
 - [docs/RUNNING.md](docs/RUNNING.md) — ติดตั้ง, build, เล่น, ปรับค่า, แก้ปัญหา
 - [docs/LEARNING.md](docs/LEARNING.md) — อธิบายสถาปัตยกรรมทีละบท + แบบฝึกหัด
+- [docs/CHANGELOG.md](docs/CHANGELOG.md) — มีอะไรใหม่ในแต่ละ patch
+- [GLOSSARY.md](GLOSSARY.md) — คำศัพท์ของเกม (Typing Challenge, Life, ...)
 
 ## Build & Run
 
@@ -30,7 +32,7 @@ ln -s "$PWD/snake" ~/.local/bin/snake
 echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc   # ถ้า ~/.local/bin ยังไม่อยู่ใน PATH
 ```
 
-ปุ่ม: ลูกศร / WASD เดิน · P หรือ Esc หยุด · Enter เริ่ม · Q ออก
+ปุ่ม: ลูกศร / WASD เดิน · P หรือ Esc หยุด · Enter เริ่ม · Q ออก · กิน `$` แล้วพิมพ์คำให้ทันเพื่อรับ Life
 
 คะแนนเก็บใน Redis (`127.0.0.1:6380` ค่าเริ่มต้น, เปลี่ยนด้วย `SNAKE_REDIS_HOST` / `SNAKE_REDIS_PORT`) — ต่อไม่ได้ก็เล่นแบบ offline ได้
 
