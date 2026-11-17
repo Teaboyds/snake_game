@@ -41,6 +41,15 @@ void MenuScene::render(engine::render::FrameBuffer& frame) {
     frame.textCentered(y++, "Arrow keys / WASD : move", Color::Gray);
     frame.textCentered(y++, "P / Esc : pause      Q : quit", Color::Gray);
 
+    // อธิบาย Challenge Fruit กับ Life: บรรทัดสีเทา แต่สัญลักษณ์ใช้สีเดียวกับในเกม
+    auto legend = [&](std::string_view symbol, Color symbolColor, std::string_view line) {
+        frame.textCentered(y, line, Color::Gray);
+        frame.text((frame.width() - static_cast<int>(line.size())) / 2, y++, symbol, symbolColor, true);
+    };
+    y += 1;
+    legend("$", Color::Yellow, "$  : eat, then type the word for a Life");
+    legend("<3", Color::Red, "<3 : Life (max 3) - survives one crash");
+
     y += 1;
     y = drawLeaderboard(frame, y, top_, session_.playerName);
 
